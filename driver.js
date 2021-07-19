@@ -1,8 +1,9 @@
 "use strict";
 
-const { Blockchain, Block, Client, Miner, Transaction, FakeNet } = require('spartan-gold');
+const { Blockchain, Client, Miner, Transaction, FakeNet } = require('spartan-gold');
 
 const NftClient = require('./nft-client.js');
+const NftBlock = require('./nft-block.js');
 
 console.log("Starting simulation.  This may take a moment...");
 
@@ -23,8 +24,9 @@ let storni = new NftClient({name: "Alfonsina Storni", net: fakeNet});
 
 // Creating genesis block
 let genesis = Blockchain.makeGenesis({
-  blockClass: Block,
+  blockClass: NftBlock,
   transactionClass: Transaction,
+  powLeadingZeroes: 13,
   clientBalanceMap: new Map([
     [alice, 233],
     [bob, 99],
@@ -62,14 +64,14 @@ setTimeout(() => {
   console.log();
   console.log("***CREATING NFT***");
   console.log();
-  storni.createNFT({
+  storni.createNft({
     artistName: storni.name,
     title: "Hombre pequeñito",
     content: `
-      Hombre pequeñito, hombre pequeñito,
-      Suelta a tu canario que quiere volar...
-      Yo soy el canario, hombre pequeñito,
-      déjame saltar.`,
+Hombre pequeñito, hombre pequeñito,
+Suelta a tu canario que quiere volar...
+Yo soy el canario, hombre pequeñito,
+déjame saltar.`,
   });
 }, 2000);
 
@@ -88,6 +90,10 @@ setTimeout(() => {
   console.log();
   console.log("Final balances (Alice's perspective):");
   showBalances(alice);
+
+  console.log();
+  console.log("Showing NFTs for Storni:");
+  storni.showNfts();
 
   process.exit(0);
 }, 5000);
