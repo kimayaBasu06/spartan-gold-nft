@@ -2,7 +2,8 @@ const net = require('net');
 const readline = require('readline');
 const { readFileSync, writeFileSync } = require('fs');
 const { Transaction, Blockchain, Miner, FakeNet } = require('spartan-gold');
-const NftBlock = require('./nft-block')
+const NftBlock = require('./nft-block');
+const NftClient = require('./nft-client');
 
 /**
  * This extends the FakeNet class to actually communicate over the network.
@@ -22,7 +23,7 @@ class TcpNet extends FakeNet {
  * Provides a command line interface for a SpartanGold miner
  * that will actually communicate over the network.
  */
-class TcpMiner extends Miner {
+class TcpMiner extends NftClient {
   static get REGISTER() { return "REGISTER"; }
 
   /**

@@ -1,10 +1,12 @@
 "use strict";
 
-const { Blockchain, Client } = require('spartan-gold');
+const { Blockchain, Miner } = require('spartan-gold');
 
 const NftBlock = require('./nft-block');
 
-module.exports = class NftClient extends Client {
+// Extending miner instead of client, since it avoids problems
+// in implementing TcpMiner.
+module.exports = class NftClient extends Miner {
 
   /**
    * Post a transaction creating a new NFT owned by the client.
