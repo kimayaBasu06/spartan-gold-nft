@@ -19,6 +19,14 @@ module.exports = class NftClient extends Miner {
       type: NftBlock.TX_TYPE_NFT_CREATE,
     }
  
+    transferNft(nft) {
+    this.log("   Not yet implemented...");
+
+    let data = {
+      nft: nft,
+      type: NftBlock.TX_TYPE_NFT_TRANSFER,
+    }
+
     // Posting a transaction to create the NFT.
     let tx = Blockchain.makeTransaction({
       from: this.address,
