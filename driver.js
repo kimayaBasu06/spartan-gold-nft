@@ -21,6 +21,7 @@ let mickey = new Miner({name: "Mickey", net: fakeNet});
 
 // Artist creating an NFT
 let storni = new NftClient({name: "Alfonsina Storni", net: fakeNet});
+let gracie = new NftClient({name: "Grace Marie", net: fakeNet});
 
 // Creating genesis block
 let genesis = Blockchain.makeGenesis({
@@ -32,6 +33,7 @@ let genesis = Blockchain.makeGenesis({
     [bob, 99],
     [charlie, 67],
     [storni, 100],
+    [gracie, 100],
     [minnie, 400],
     [mickey, 300],
   ]),
@@ -49,7 +51,7 @@ function showBalances(client) {
 console.log("Initial balances:");
 showBalances(alice);
 
-fakeNet.register(alice, bob, charlie, minnie, mickey, storni);
+fakeNet.register(alice, bob, charlie, minnie, mickey, storni, gracie);
 
 // Miners start mining.
 minnie.initialize();
@@ -74,6 +76,18 @@ Yo soy el canario, hombre pequeñito,
 déjame saltar.`,
   });
 }, 2000);
+
+setTimeout(() => {
+  console.log();
+  console.log("***Transferring NFT***");
+  console.log();
+  global.receiverName = gracie.address;
+  console.log();
+  storni.transferNft({
+    receiver: receiverName,
+    contentId: global.nftIdentity,
+  });
+}, 3000);
 
 // Print out the final balances after it has been running for some time.
 setTimeout(() => {
