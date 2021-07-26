@@ -42,7 +42,33 @@ module.exports = class NftClient extends Miner {
    * Post a transaction transferring an NFT to a new owner.
    */
   transferNft() {
-    this.log("   Not yet implemented...");
+    //this.log("   Not yet implemented...");
+
+    let data = {
+      type: NftBlock.TX_TYPE_NFT_TRANSFER,
+      nft: global.nftIdentity,
+    }
+    console.log();
+    
+ 
+    // Posting a transaction to transfer the NFT.
+    let tx = Blockchain.makeTransaction({
+      from: this.address,
+      nonce: this.nonce,
+      pubKey: this.keyPair.public,
+      data: data,
+      fee: 0,
+    });
+    console.log();
+
+    tx.sign(this.keyPair.private);
+  
+    // Adding transaction to pending.
+    this.pendingOutgoingTransactions.set(tx.id, tx);
+    
+    this.nonce++;
+
+    this.net.broadcast(Blockchain.POST_TRANSACTION, tx);
   }
 
   showNfts() {
