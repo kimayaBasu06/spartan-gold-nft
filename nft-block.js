@@ -44,6 +44,7 @@ module.exports = class NftBlock extends Block {
 
       case TX_TYPE_NFT_TRANSFER:
         this.transferNft(tx.data.addr.addr, tx.data.id.id, tx.data.sender.a)
+        break;
     }
 
     // Transaction added successfully.
