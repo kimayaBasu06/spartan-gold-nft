@@ -44,8 +44,9 @@ module.exports = class NftBlock extends Block {
         break;
 
       case TX_TYPE_NFT_TRANSFER:
-        throw "Not yet implemented";
-        //break;
+        console.log(`Transferring NFT for ${tx.from}`);
+        this.transferNft(tx.from);
+        break;
 
       default:
         throw new Error(`Unrecognized type: ${tx.data.type}`);
@@ -80,6 +81,20 @@ module.exports = class NftBlock extends Block {
     let ownedNfts = this.nftOwnerMap.get(owner) || [];
     ownedNfts.push(nftID);
     this.nftOwnerMap.set(owner, ownedNfts);
+  }
+  
+  transferNft(owner) {
+    console.log();
+
+    let theNFT = global.nftIdentity;
+    let sent = global.receiverName;
+    // Adding NFT to artists list.
+    let sentNfts = this.nftOwnerMap.get(sent) || [];
+    sentNfts.push(global.nftIdentity);
+    this.nftOwnerMap.set(sent, sentNfts);
+
+    let ownedNfts = this.nftOwnerMap.get(owner) || [];
+    ownedNfts.pop(global.nftIdentity);
   }
 
   getNft(nftID) {
