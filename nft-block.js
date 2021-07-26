@@ -1,26 +1,18 @@
 "use strict";
-
 const { Block, utils } = require('../spartan-gold');
-
 const TX_TYPE_NFT_CREATE = "NFT_CREATE";
 const TX_TYPE_NFT_TRANSFER = "NFT_TRANSFER";
 
 module.exports = class NftBlock extends Block {
-
   static get TX_TYPE_NFT_CREATE() { return TX_TYPE_NFT_CREATE; }
   static get TX_TYPE_NFT_TRANSFER() { return TX_TYPE_NFT_TRANSFER; }
-
   constructor(rewardAddr, prevBlock, target, coinbaseReward) {
     super(rewardAddr, prevBlock, target, coinbaseReward);
-
     // Tracking NFTs
     this.nfts = (prevBlock && prevBlock.nfts) ? new Map(prevBlock.nfts) : new Map();
-
     // Tracking ownership of NFTs
     this.nftOwnerMap = (prevBlock && prevBlock.nftOwnerMap) ? new Map(prevBlock.nftOwnerMap) : new Map();
-
   }
-
   /**
    * This method extends the parent method with support for gold locking transactions.
    * 
@@ -74,7 +66,6 @@ module.exports = class NftBlock extends Block {
 
     return super.rerun(prevBlock);
   }
-
   createNft(owner, txID, nft) {
     // The ID of an NFT is the hash of the owner address and
     // the transaction ID.
@@ -86,7 +77,6 @@ module.exports = class NftBlock extends Block {
     ownedNfts.push(nftID);
     this.nftOwnerMap.set(owner, ownedNfts);
   }
-///////////////////////////
   transferNft(owner) {
     console.log();
 
@@ -100,7 +90,6 @@ module.exports = class NftBlock extends Block {
     let ownedNfts = this.nftOwnerMap.get(owner) || [];
     ownedNfts.pop(global.nftIdentity);
   }
-//////////////////////////////////
   getNft(nftID) {
     return this.nfts.get(nftID);
   }
