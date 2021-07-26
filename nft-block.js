@@ -1,6 +1,6 @@
 "use strict";
 
-const { Block, utils } = require('spartan-gold');
+const { Block, utils } = require('../spartan-gold');
 
 const TX_TYPE_NFT_CREATE = "NFT_CREATE";
 const TX_TYPE_NFT_TRANSFER = "NFT_TRANSFER";
@@ -39,16 +39,11 @@ module.exports = class NftBlock extends Block {
     switch (tx.data.type) {
 
       case TX_TYPE_NFT_CREATE:
-        console.log(`Creating NFT for ${tx.from}`);
         this.createNft(tx.from, tx.id, tx.data.nft);
         break;
 
       case TX_TYPE_NFT_TRANSFER:
-        throw "Not yet implemented";
-        //break;
-
-      default:
-        throw new Error(`Unrecognized type: ${tx.data.type}`);
+        this.transferNft(tx.data.addr.addr, tx.data.id.id, tx.data.sender.a)
     }
 
     // Transaction added successfully.
@@ -78,8 +73,39 @@ module.exports = class NftBlock extends Block {
 
     // Adding NFT to artists list.
     let ownedNfts = this.nftOwnerMap.get(owner) || [];
-    ownedNfts.push(nftID);
-    this.nftOwnerMap.set(owner, ownedNfts);
+    if(ownedNfts.includes(nftID) == false)
+    {
+      ownedNfts.push(nftID);
+      this.nftOwnerMap.set(owner, ownedNfts);
+    }
+  }
+
+  transferNft(owner, nftID, sender)
+  {
+    let ownedNftsO = this.nftOwnerMap.get(owner) || [];
+    if(ownedNftsO.includes(nftID) == false)
+    {
+      ownedNftsO.push(nftID);
+      this.nftOwnerMap.set(owner, ownedNftsO);
+    }
+
+    let ownedNftsS = this.nftOwnerMap.get(sender) || [];
+    if(ownedNftsS.includes(nftID) == true)
+    {
+      var i = 0;
+      while (i < ownedNftsS.length) 
+      {
+        if (ownedNftsS[i] == nftID) 
+        {
+        ownedNftsS.splice(i, 1);
+        } 
+        else 
+        {
+           ++i;
+        }
+      }
+      this.nftOwnerMap.set(sender, ownedNftsS);
+    }
   }
 
   getNft(nftID) {

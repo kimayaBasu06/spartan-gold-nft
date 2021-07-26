@@ -1,6 +1,6 @@
 "use strict";
 
-const { Blockchain, Miner } = require('spartan-gold');
+const { Blockchain, Miner } = require('../spartan-gold');
 
 const NftBlock = require('./nft-block');
 
@@ -41,11 +41,37 @@ module.exports = class NftClient extends Miner {
   /**
    * Post a transaction transferring an NFT to a new owner.
    */
-  transferNft() {
-    this.log("   Not yet implemented...");
+  transferNft(addr, id, sender) {
+
+    let data = {
+      sender: sender,
+      addr: addr,
+      id: id,
+      type: NftBlock.TX_TYPE_NFT_TRANSFER,
+    }
+ 
+    // Posting a transaction to create the NFT.
+    let tx = Blockchain.makeTransaction({
+      from: this.address,
+      nonce: this.nonce,
+      pubKey: this.keyPair.public,
+      data: data,
+      fee: 0,
+    });
+
+    tx.sign(this.keyPair.private);
+
+    // Adding transaction to pending.
+    this.pendingOutgoingTransactions.set(tx.id, tx);
+
+    this.nonce++;
+
+    this.net.broadcast(Blockchain.POST_TRANSACTION, tx);
   }
 
   showNfts() {
+    console.log("Showing NFTs: ");
+    console.log();
     let nftList = this.lastBlock.getOwnersNftList(this.address);
     nftList.forEach(nftID => {
       let nft = this.lastBlock.getNft(nftID);
@@ -53,6 +79,8 @@ module.exports = class NftClient extends Miner {
 ${nft.artistName}'s "${nft.title}"
 ------------------------------------
 ${nft.content}
+
+NFT ID: ${nftID}
       `);
       console.log();
     });

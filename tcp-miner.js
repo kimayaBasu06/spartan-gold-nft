@@ -1,7 +1,7 @@
 const net = require('net');
 const readline = require('readline');
 const { readFileSync, writeFileSync } = require('fs');
-const { Transaction, Blockchain, Miner, FakeNet } = require('spartan-gold');
+const { Transaction, Blockchain, Miner, FakeNet } = require('../spartan-gold');
 const NftBlock = require('./nft-block');
 const NftClient = require('./nft-client');
 
@@ -153,6 +153,9 @@ function readUserInput() {
   *(t)ransfer funds?
   *(r)esend pending transactions?
   *show (b)alances?
+  *create (n)fts?
+  *d(i)splay nfts?
+  *tr(a)nsfer nfts?
   *show blocks for (d)ebugging and exit?
   *(s)ave your state?
   *e(x)it without saving?
@@ -191,6 +194,36 @@ function readUserInput() {
           }
         });
         break;
+        case 'i':
+        minnie.showNfts();
+        readUserInput();
+        break;
+        case 'a':
+        rl.question(`  nft id: `, (id) => {
+          rl.question(`  address: `, (addr) =>{
+            let a = minnie.address;
+            minnie.transferNft({addr}, {id}, {a})
+            console.log("  Transferring NFT");
+            setTimeout(() => {
+              readUserInput();
+            }, 1500);
+          });
+        });
+        break;
+        case 'n':
+        rl.question(`  nft name: `, (title) => {
+          rl.question(`  content of nft: `, (content) =>{
+            minnie.createNft({
+              artistName: minnie.name,
+              title: title, 
+              content: content,})
+            console.log("  Creating NFT");
+            setTimeout(() => {
+              readUserInput();
+            }, 1500);
+          });
+        });
+        break;
       case 'r':
         minnie.resendPendingTransactions();
         break;
@@ -219,4 +252,3 @@ function readUserInput() {
 }
 
 readUserInput();
-
