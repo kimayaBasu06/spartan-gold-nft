@@ -74,38 +74,37 @@ module.exports = class NftBlock extends Block {
 
     // Adding NFT to artists list.
     let ownedNfts = this.nftOwnerMap.get(owner) || [];
-    if(ownedNfts.includes(nftID) == false)
+    if(ownedNfts.includes(nftID) === false)
     {
       ownedNfts.push(nftID);
       this.nftOwnerMap.set(owner, ownedNfts);
     }
   }
 
-  transferNft(owner, nftID, sender)
-  {
-    let ownedNftsO = this.nftOwnerMap.get(owner) || [];
-    if(ownedNftsO.includes(nftID) == false)
+  transferNft(reciever, nftID, sender) {
+    let ownedNftsReciever = this.nftOwnerMap.get(reciever) || [];
+    if(ownedNftsReciever.includes(nftID) === false)
     {
-      ownedNftsO.push(nftID);
-      this.nftOwnerMap.set(owner, ownedNftsO);
+      ownedNftsReciever.push(nftID);
+      this.nftOwnerMap.set(reciever, ownedNftsReciever);
     }
 
-    let ownedNftsS = this.nftOwnerMap.get(sender) || [];
-    if(ownedNftsS.includes(nftID) == true)
+    let ownedNftsSender = this.nftOwnerMap.get(sender) || [];
+    if(ownedNftsSender.includes(nftID) === true)
     {
-      var i = 0;
-      while (i < ownedNftsS.length) 
+      let i = 0;
+      while (i < ownedNftsSender.length) 
       {
-        if (ownedNftsS[i] == nftID) 
+        if (ownedNftsSender[i] === nftID) 
         {
-        ownedNftsS.splice(i, 1);
+        ownedNftsSender.splice(i, 1);
         } 
         else 
         {
            ++i;
         }
       }
-      this.nftOwnerMap.set(sender, ownedNftsS);
+      this.nftOwnerMap.set(sender, ownedNftsSender);
     }
   }
 
