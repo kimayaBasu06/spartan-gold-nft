@@ -1,6 +1,6 @@
 "use strict";
 
-const { Blockchain, Client, Miner, Transaction, FakeNet } = require('spartan-gold');
+const { Blockchain, Client, Miner, Transaction, FakeNet } = require('../spartan-gold');
 
 const NftClient = require('./nft-client.js');
 const NftBlock = require('./nft-block.js');
@@ -32,10 +32,10 @@ let genesis = Blockchain.makeGenesis({
     [alice, 233],
     [bob, 99],
     [charlie, 67],
-    [storni, 100],
-    [gracie, 200],
-    [minnie, 400],
-    [mickey, 300],
+    [storni, 500],
+    [gracie, 300],
+    [minnie, 500],
+    [mickey, 500],
   ]),
 });
 
@@ -77,21 +77,15 @@ déjame saltar.`,
   });
 }, 2000);
 
-/////////////////////
-// Transfers Storni's NFT to Bob. Now Bob will own the NFT, and not Storni.
+
 setTimeout(() => {
   console.log();
   console.log("***Transferring NFT***");
   console.log();
-  global.receiverName = gracie.address;
-  console.log();
-  storni.transferNft({
-    receiver: receiverName,
-    contentId: global.nftIdentity,
-  });
+  storni.transferNft((gracie.address), storni.name, "Hombre pequeñito")
 }, 4000);
 
-////////////////////////
+
 // Print out the final balances after it has been running for some time.
 setTimeout(() => {
   console.log();
@@ -110,7 +104,11 @@ setTimeout(() => {
 
   console.log();
   console.log("Showing NFTs for Storni:");
-  storni.showNfts();
+  storni.showNfts(storni.address);
+
+  console.log();
+  console.log("Showing NFTs for Gracie:");
+  gracie.showNfts(gracie.address);
 
   process.exit(0);
-}, 5000);
+}, 6000);
