@@ -1,6 +1,6 @@
 "use strict";
 
-const { Blockchain, Client, Miner, Transaction, FakeNet } = require('../spartan-gold');
+const { Blockchain, Client, Miner, Transaction, FakeNet } = require('spartan-gold');
 
 const NftClient = require('./nft-client.js');
 const NftBlock = require('./nft-block.js');
