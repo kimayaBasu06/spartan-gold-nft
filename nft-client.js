@@ -1,6 +1,6 @@
 "use strict";
 
-const { Blockchain, Miner } = require('../spartan-gold');
+const { Blockchain, Miner } = require('spartan-gold');
 
 const NftBlock = require('./nft-block');
 
@@ -12,8 +12,6 @@ module.exports = class NftClient extends Miner {
    * Post a transaction creating a new NFT owned by the client.
    */
   createNft(nft) {
-    this.log("   Not yet implemented...");
-
     let data = {
       nft: nft,
       type: NftBlock.TX_TYPE_NFT_CREATE,
@@ -45,6 +43,7 @@ module.exports = class NftClient extends Miner {
       type: NftBlock.TX_TYPE_NFT_TRANSFER,
       title: title,
       artName: artName,
+      receiver: receiver,
     }
     
     // Posting a transaction to transfer the NFT.
@@ -54,7 +53,6 @@ module.exports = class NftClient extends Miner {
       pubKey: this.keyPair.public,
       data: data,
       fee: 0,
-      receiver: receiver,
     });
     console.log();
     tx.sign(this.keyPair.private);

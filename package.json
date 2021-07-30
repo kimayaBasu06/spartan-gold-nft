@@ -1,0 +1,20 @@
+{
+  "name": "spartan-gold-nft",
+  "version": "1.0.0",
+  "description": "A prototype implementation for a blockchain with NFT support",
+  "main": "driver.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/taustin/spartan-gold-nft.git"
+  },
+  "author": "Tom Austin",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/taustin/spartan-gold-nft/issues"
+  },
+  "homepage": "https://github.com/taustin/spartan-gold-nft#readme"
+}

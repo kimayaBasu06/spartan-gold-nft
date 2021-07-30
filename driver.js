@@ -82,7 +82,7 @@ setTimeout(() => {
   console.log();
   console.log("***Transferring NFT***");
   console.log();
-  storni.transferNft((gracie.address), storni.name, "Hombre pequeñito")
+  storni.transferNft(gracie.address, storni.name, "Hombre pequeñito")
 }, 4000);
 
 

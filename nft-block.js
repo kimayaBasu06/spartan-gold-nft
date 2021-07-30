@@ -1,6 +1,6 @@
 "use strict";
 
-const { Block, utils } = require('../spartan-gold');
+const { Block, utils } = require('spartan-gold');
 
 const TX_TYPE_NFT_CREATE = "NFT_CREATE";
 const TX_TYPE_NFT_TRANSFER = "NFT_TRANSFER";
@@ -49,12 +49,7 @@ module.exports = class NftBlock extends Block {
 
       case TX_TYPE_NFT_TRANSFER:
         console.log(`Transferring NFT for ${tx.from}`);
-        this.transferNft(tx.from, tx.receiver, tx.data.title, tx.data.artName);
-        break;
-
-      case TX_TYPE_NFT_TRANSFER:
-        console.log(`Getting NFT for ${this.from}`);
-        this.getNft(title);
+        this.transferNft(tx.from, tx.data.receiver, tx.data.title, tx.data.artName);
         break;
 
       default:
@@ -91,7 +86,7 @@ module.exports = class NftBlock extends Block {
     ownedNfts.push(nftID);
     this.nftOwnerMap.set(owner, ownedNfts);
   }
-///////////////////////////
+
   transferNft(owner, receiver, title, artName) {
     let sent = receiver;
     let nftList = this.getOwnersNftList(owner);
@@ -105,7 +100,7 @@ module.exports = class NftBlock extends Block {
     ownedNfts.pop(nftIdentifier);
 
   }
-//////////////////////////////////
+
   getNft(nftID) {
     return this.nfts.get(nftID);
   }
