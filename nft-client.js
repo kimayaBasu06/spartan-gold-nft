@@ -1,6 +1,6 @@
 "use strict";
 
-const { Blockchain, Miner } = require('spartan-gold');
+const { Blockchain, Miner } = require('../spartan-gold');
 
 const NftBlock = require('./nft-block');
 
@@ -27,12 +27,41 @@ module.exports = class NftClient extends Miner {
       data: data,
       fee: 0,
     });
-
+  
     tx.sign(this.keyPair.private);
-
+    
     // Adding transaction to pending.
     this.pendingOutgoingTransactions.set(tx.id, tx);
 
+    this.nonce++;
+
+    this.net.broadcast(Blockchain.POST_TRANSACTION, tx);
+  }
+
+  transferNft(receiver, artName, title) {
+    //this.log("   Not yet implemented...");
+
+    let data = {
+      type: NftBlock.TX_TYPE_NFT_TRANSFER,
+      title: title,
+      artName: artName,
+    }
+    
+    // Posting a transaction to transfer the NFT.
+    let tx = Blockchain.makeTransaction({
+      from: this.address,
+      nonce: this.nonce,
+      pubKey: this.keyPair.public,
+      data: data,
+      fee: 0,
+      receiver: receiver,
+    });
+    console.log();
+    tx.sign(this.keyPair.private);
+    console.log();
+    // Adding transaction to pending.
+    this.pendingOutgoingTransactions.set(tx.id, tx);
+    console.log();
     this.nonce++;
 
     this.net.broadcast(Blockchain.POST_TRANSACTION, tx);
@@ -41,44 +70,16 @@ module.exports = class NftClient extends Miner {
   /**
    * Post a transaction transferring an NFT to a new owner.
    */
-  transferNft() {
-    //this.log("   Not yet implemented...");
-
-    let data = {
-      type: NftBlock.TX_TYPE_NFT_TRANSFER,
-      nft: global.nftIdentity,
-    }
-    console.log();
-    
- 
-    // Posting a transaction to transfer the NFT.
-    let tx = Blockchain.makeTransaction({
-      from: this.address,
-      nonce: this.nonce,
-      pubKey: this.keyPair.public,
-      data: data,
-      fee: 0,
-    });
-    console.log();
-
-    tx.sign(this.keyPair.private);
   
-    // Adding transaction to pending.
-    this.pendingOutgoingTransactions.set(tx.id, tx);
-    
-    this.nonce++;
+  showNfts(adName) {
+    let nftList = this.lastBlock.getOwnersNftList(adName);
 
-    this.net.broadcast(Blockchain.POST_TRANSACTION, tx);
-  }
-
-  showNfts() {
-    let nftList = this.lastBlock.getOwnersNftList(this.address);
     nftList.forEach(nftID => {
       let nft = this.lastBlock.getNft(nftID);
       console.log(`
-${nft.artistName}'s "${nft.title}"
-------------------------------------
-${nft.content}
+      ${nft.artistName}'s "${nft.title}"
+      ------------------------------------
+      ${nft.content}
       `);
       console.log();
     });
