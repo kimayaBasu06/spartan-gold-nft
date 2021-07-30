@@ -1,18 +1,26 @@
 "use strict";
+
 const { Block, utils } = require('../spartan-gold');
+
 const TX_TYPE_NFT_CREATE = "NFT_CREATE";
 const TX_TYPE_NFT_TRANSFER = "NFT_TRANSFER";
 
 module.exports = class NftBlock extends Block {
+
   static get TX_TYPE_NFT_CREATE() { return TX_TYPE_NFT_CREATE; }
   static get TX_TYPE_NFT_TRANSFER() { return TX_TYPE_NFT_TRANSFER; }
+
   constructor(rewardAddr, prevBlock, target, coinbaseReward) {
     super(rewardAddr, prevBlock, target, coinbaseReward);
+
     // Tracking NFTs
     this.nfts = (prevBlock && prevBlock.nfts) ? new Map(prevBlock.nfts) : new Map();
+
     // Tracking ownership of NFTs
     this.nftOwnerMap = (prevBlock && prevBlock.nftOwnerMap) ? new Map(prevBlock.nftOwnerMap) : new Map();
+
   }
+
   /**
    * This method extends the parent method with support for gold locking transactions.
    * 
@@ -41,7 +49,12 @@ module.exports = class NftBlock extends Block {
 
       case TX_TYPE_NFT_TRANSFER:
         console.log(`Transferring NFT for ${tx.from}`);
-        this.transferNft(tx.from);
+        this.transferNft(tx.from, tx.receiver, tx.data.title, tx.data.artName);
+        break;
+
+      case TX_TYPE_NFT_TRANSFER:
+        console.log(`Getting NFT for ${this.from}`);
+        this.getNft(title);
         break;
 
       default:
@@ -66,32 +79,48 @@ module.exports = class NftBlock extends Block {
 
     return super.rerun(prevBlock);
   }
+
   createNft(owner, txID, nft) {
     // The ID of an NFT is the hash of the owner address and
     // the transaction ID.
     let nftID = utils.hash(`${owner}  ${txID}`);
-    global.nftIdentity = nftID;
     this.nfts.set(nftID, nft);
+    
     // Adding NFT to artists list.
     let ownedNfts = this.nftOwnerMap.get(owner) || [];
     ownedNfts.push(nftID);
     this.nftOwnerMap.set(owner, ownedNfts);
   }
-  transferNft(owner) {
-    console.log();
+///////////////////////////
+  transferNft(owner, receiver, title, artName) {
+    let sent = receiver;
+    let nftList = this.getOwnersNftList(owner);
 
-    let theNFT = global.nftIdentity;
-    let sent = global.receiverName;
+    let nftIdentifier = this.getNftId(title, artName, nftList);
     // Adding NFT to artists list.
     let sentNfts = this.nftOwnerMap.get(sent) || [];
-    sentNfts.push(global.nftIdentity);
+    sentNfts.push(nftIdentifier);
     this.nftOwnerMap.set(sent, sentNfts);
-
     let ownedNfts = this.nftOwnerMap.get(owner) || [];
-    ownedNfts.pop(global.nftIdentity);
+    ownedNfts.pop(nftIdentifier);
+
   }
+//////////////////////////////////
   getNft(nftID) {
     return this.nfts.get(nftID);
+  }
+
+  getNftId(title, artName, nftList) { 
+    var nftIdent;
+    nftList.forEach(nftID => {
+      let nft = this.getNft(nftID);
+      if (nft.artistName === artName) {
+        if (nft.title === title) {
+          nftIdent = nftID;
+        }
+      }
+    });
+    return nftIdent;
   }
 
   getOwnersNftList(owner) {
