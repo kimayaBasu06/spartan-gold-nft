@@ -78,7 +78,7 @@ module.exports = class NftBlock extends Block {
     // the transaction ID.
     let nftID = utils.hash(`${owner}  ${txID}`);
     this.nfts.set(nftID, nft);
-
+    
     // Adding NFT to artists list.
     let ownedNfts = this.nftOwnerMap.get(owner) || [];
     if(ownedNfts.includes(nftID) === false)
@@ -118,6 +118,20 @@ module.exports = class NftBlock extends Block {
       this.nftOwnerMap.set(sender, ownedNftsSender);
       return;
     }
+
+  }
+
+  transferNft(owner, receiver, title, artName) {
+    let sent = receiver;
+    let nftList = this.getOwnersNftList(owner);
+
+    let nftIdentifier = this.getNftId(title, artName, nftList);
+    // Adding NFT to artists list.
+    let sentNfts = this.nftOwnerMap.get(sent) || [];
+    sentNfts.push(nftIdentifier);
+    this.nftOwnerMap.set(sent, sentNfts);
+    let ownedNfts = this.nftOwnerMap.get(owner) || [];
+    ownedNfts.pop(nftIdentifier);
 
   }
 

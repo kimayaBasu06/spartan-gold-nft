@@ -68,7 +68,6 @@ module.exports = class NftClient extends Miner {
   /**
    * Post a transaction transferring an NFT to a new owner.
    */
-  
   showNfts() {
     console.log("Showing NFTs: ");
     console.log();
@@ -76,9 +75,9 @@ module.exports = class NftClient extends Miner {
     nftList.forEach(nftID => {
       let nft = this.lastBlock.getNft(nftID);
       console.log(`
-${nft.artistName}'s "${nft.title}"
-------------------------------------
-${nft.content}
+      ${nft.artistName}'s "${nft.title}"
+      ------------------------------------
+      ${nft.content}
       `);
       console.log();
     });
