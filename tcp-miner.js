@@ -153,6 +153,9 @@ function readUserInput() {
   *(t)ransfer funds?
   *(r)esend pending transactions?
   *show (b)alances?
+  *create (n)fts?
+  *d(i)splay nfts?
+  *tr(a)nsfer nfts?
   *show blocks for (d)ebugging and exit?
   *(s)ave your state?
   *e(x)it without saving?
@@ -191,6 +194,37 @@ function readUserInput() {
           }
         });
         break;
+        case 'i':
+        minnie.showNfts();
+        readUserInput();
+        break;
+        case 'a':
+        rl.question(`  artist name: `, (artName) => {
+          rl.question(`  title of nft: `, (title) => {
+            rl.question(`  address: `, (addr) => {
+              minnie.transferNft(addr, artName, title);
+              console.log("  Transferring NFT");
+              setTimeout(() => {
+                readUserInput();
+              }, 1500);
+            });
+          });
+        });
+        break;
+        case 'n':
+        rl.question(`  nft name: `, (title) => {
+          rl.question(`  content of nft: `, (content) =>{
+            minnie.createNft({
+              artistName: minnie.name,
+              title: title, 
+              content: content,})
+            console.log("  Creating NFT");
+            setTimeout(() => {
+              readUserInput();
+            }, 1600);
+          });
+        });
+        break;
       case 'r':
         minnie.resendPendingTransactions();
         break;
@@ -219,4 +253,3 @@ function readUserInput() {
 }
 
 readUserInput();
-

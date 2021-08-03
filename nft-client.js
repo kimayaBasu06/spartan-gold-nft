@@ -41,9 +41,9 @@ module.exports = class NftClient extends Miner {
 
     let data = {
       type: NftBlock.TX_TYPE_NFT_TRANSFER,
-      title: title,
-      artName: artName,
-      receiver: receiver,
+      t: title,
+      a: artName,
+      r: receiver,
     }
     
     // Posting a transaction to transfer the NFT.
@@ -68,10 +68,10 @@ module.exports = class NftClient extends Miner {
   /**
    * Post a transaction transferring an NFT to a new owner.
    */
-  
-  showNfts(adName) {
-    let nftList = this.lastBlock.getOwnersNftList(adName);
-
+  showNfts() {
+    console.log("Showing NFTs: ");
+    console.log();
+    let nftList = this.lastBlock.getOwnersNftList(this.address);
     nftList.forEach(nftID => {
       let nft = this.lastBlock.getNft(nftID);
       console.log(`
