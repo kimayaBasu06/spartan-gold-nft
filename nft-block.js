@@ -1,6 +1,6 @@
 "use strict";
 
-const { Block, utils } = require('../spartan-gold');
+const { Block, utils } = require('spartan-gold');
 
 const TX_TYPE_NFT_CREATE = "NFT_CREATE";
 const TX_TYPE_NFT_TRANSFER = "NFT_TRANSFER";
@@ -30,21 +30,28 @@ module.exports = class NftBlock extends Block {
    * @returns Success of adding transaction to the block.
    */
   addTransaction(tx, client) {
-    //console.log(`Adding tx: ${JSON.stringify(tx)}`);
-    if (!super.addTransaction(tx, client)) return false;
+    console.log();
+    if (!super.addTransaction(tx, client)) {
+      return false;
+    } 
 
     // For standard transactions, we don't need to do anything else.
-    if (tx.data === undefined || tx.data.type === undefined) return true;
+    if (tx.data === undefined || tx.data.type === undefined){
+      return true;
+    }
 
     switch (tx.data.type) {
 
-      case TX_TYPE_NFT_CREATE:
+      case TX_TYPE_NFT_CREATE: 
         this.createNft(tx.from, tx.id, tx.data.nft);
         break;
 
       case TX_TYPE_NFT_TRANSFER:
-        this.transferNft(tx.data.addr.addr, tx.data.id.id, tx.data.sender.a)
+        this.transferNft(tx.from, tx.data.r, tx.data.t, tx.data.a);
         break;
+
+      default:
+        throw new Error(`Unrecognized type: ${tx.data.type}`);
     }
 
     // Transaction added successfully.
@@ -81,35 +88,54 @@ module.exports = class NftBlock extends Block {
     }
   }
 
-  transferNft(reciever, nftID, sender) {
-    let ownedNftsReciever = this.nftOwnerMap.get(reciever) || [];
-    if(ownedNftsReciever.includes(nftID) === false)
-    {
-      ownedNftsReciever.push(nftID);
-      this.nftOwnerMap.set(reciever, ownedNftsReciever);
+  transferNft(sender, receiver, title, artName) {
+    let nftList = this.getOwnersNftList(sender);
+    
+    // Getting nftID
+    let nftID = this.getNftId(title, artName, nftList);
+
+    // Adding NFT to artists list.  
+    let ownedNftsReceiver = this.nftOwnerMap.get(receiver) || [];
+    console.log(ownedNftsReceiver);
+    if(ownedNftsReceiver.includes(nftID) === false) {
+        ownedNftsReceiver.push(nftID);
+        this.nftOwnerMap.set(receiver, ownedNftsReceiver);
+        console.log(ownedNftsReceiver);
     }
 
+    // Removing nft from sender
     let ownedNftsSender = this.nftOwnerMap.get(sender) || [];
-    if(ownedNftsSender.includes(nftID) === true)
-    {
+    if(ownedNftsSender.includes(nftID) === true) {
       let i = 0;
-      while (i < ownedNftsSender.length) 
-      {
-        if (ownedNftsSender[i] === nftID) 
-        {
+      while (i < ownedNftsSender.length) {
+        if (ownedNftsSender[i] === nftID) {
         ownedNftsSender.splice(i, 1);
         } 
-        else 
-        {
+        else {
            ++i;
         }
       }
       this.nftOwnerMap.set(sender, ownedNftsSender);
+      return;
     }
+
   }
 
   getNft(nftID) {
     return this.nfts.get(nftID);
+  }
+
+  getNftId(title, artName, nftList) { 
+    var nftIdent;
+    nftList.forEach(nftID => {
+      let nft = this.getNft(nftID);
+      if (nft.artistName === artName) {
+        if (nft.title === title) {
+          nftIdent = nftID;
+        }
+      }
+    });
+    return nftIdent;
   }
 
   getOwnersNftList(owner) {

@@ -1,6 +1,6 @@
 "use strict";
 
-const { Blockchain, Miner } = require('../spartan-gold');
+const { Blockchain, Miner } = require('spartan-gold');
 
 const NftBlock = require('./nft-block');
 
@@ -12,8 +12,6 @@ module.exports = class NftClient extends Miner {
    * Post a transaction creating a new NFT owned by the client.
    */
   createNft(nft) {
-    this.log("   Not yet implemented...");
-
     let data = {
       nft: nft,
       type: NftBlock.TX_TYPE_NFT_CREATE,
@@ -27,12 +25,41 @@ module.exports = class NftClient extends Miner {
       data: data,
       fee: 0,
     });
-
+  
     tx.sign(this.keyPair.private);
-
+    
     // Adding transaction to pending.
     this.pendingOutgoingTransactions.set(tx.id, tx);
 
+    this.nonce++;
+
+    this.net.broadcast(Blockchain.POST_TRANSACTION, tx);
+  }
+
+  transferNft(receiver, artName, title) {
+    //this.log("   Not yet implemented...");
+
+    let data = {
+      type: NftBlock.TX_TYPE_NFT_TRANSFER,
+      t: title,
+      a: artName,
+      r: receiver,
+    }
+    
+    // Posting a transaction to transfer the NFT.
+    let tx = Blockchain.makeTransaction({
+      from: this.address,
+      nonce: this.nonce,
+      pubKey: this.keyPair.public,
+      data: data,
+      fee: 0,
+    });
+    console.log();
+    tx.sign(this.keyPair.private);
+    console.log();
+    // Adding transaction to pending.
+    this.pendingOutgoingTransactions.set(tx.id, tx);
+    console.log();
     this.nonce++;
 
     this.net.broadcast(Blockchain.POST_TRANSACTION, tx);
@@ -41,34 +68,7 @@ module.exports = class NftClient extends Miner {
   /**
    * Post a transaction transferring an NFT to a new owner.
    */
-  transferNft(addr, id, sender) {
-
-    let data = {
-      sender: sender,
-      addr: addr,
-      id: id,
-      type: NftBlock.TX_TYPE_NFT_TRANSFER,
-    }
- 
-    // Posting a transaction to create the NFT.
-    let tx = Blockchain.makeTransaction({
-      from: this.address,
-      nonce: this.nonce,
-      pubKey: this.keyPair.public,
-      data: data,
-      fee: 0,
-    });
-
-    tx.sign(this.keyPair.private);
-
-    // Adding transaction to pending.
-    this.pendingOutgoingTransactions.set(tx.id, tx);
-
-    this.nonce++;
-
-    this.net.broadcast(Blockchain.POST_TRANSACTION, tx);
-  }
-
+  
   showNfts() {
     console.log("Showing NFTs: ");
     console.log();
@@ -79,8 +79,6 @@ module.exports = class NftClient extends Miner {
 ${nft.artistName}'s "${nft.title}"
 ------------------------------------
 ${nft.content}
-
-NFT ID: ${nftID}
       `);
       console.log();
     });
