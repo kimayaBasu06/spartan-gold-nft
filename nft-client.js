@@ -1,6 +1,6 @@
 "use strict";
 
-const { Blockchain, Miner } = require('../spartan-gold');
+const { Blockchain, Miner } = require('spartan-gold');
 
 const NftBlock = require('./nft-block');
 
@@ -12,8 +12,6 @@ module.exports = class NftClient extends Miner {
    * Post a transaction creating a new NFT owned by the client.
    */
   createNft(nft) {
-    this.log("   Not yet implemented...");
-
     let data = {
       nft: nft,
       type: NftBlock.TX_TYPE_NFT_CREATE,
@@ -43,8 +41,9 @@ module.exports = class NftClient extends Miner {
 
     let data = {
       type: NftBlock.TX_TYPE_NFT_TRANSFER,
-      title: title,
-      artName: artName,
+      t: title,
+      a: artName,
+      r: receiver,
     }
     
     // Posting a transaction to transfer the NFT.
@@ -54,7 +53,6 @@ module.exports = class NftClient extends Miner {
       pubKey: this.keyPair.public,
       data: data,
       fee: 0,
-      receiver: receiver,
     });
     console.log();
     tx.sign(this.keyPair.private);
@@ -67,13 +65,20 @@ module.exports = class NftClient extends Miner {
     this.net.broadcast(Blockchain.POST_TRANSACTION, tx);
   }
 
+
+  postTransaction(TsmartContract) {
+    //this.log("   Not yet implemented...");
+    console.log("THIS IS THE SMART CONTRACT???");
+    console.log(TsmartContract)
+  }
+
   /**
    * Post a transaction transferring an NFT to a new owner.
    */
-  
-  showNfts(adName) {
-    let nftList = this.lastBlock.getOwnersNftList(adName);
-
+  showNfts() {
+    console.log("Showing NFTs: ");
+    console.log();
+    let nftList = this.lastBlock.getOwnersNftList(this.address);
     nftList.forEach(nftID => {
       let nft = this.lastBlock.getNft(nftID);
       console.log(`
@@ -83,5 +88,10 @@ module.exports = class NftClient extends Miner {
       `);
       console.log();
     });
+  }
+
+  createContract(artistID) {
+    let fruits = ['Apple', 'Banana', artistID];
+    return fruits;
   }
 }
