@@ -1,6 +1,6 @@
 "use strict";
 
-const { Block, utils } = require('../spartan-gold');
+const { Block, utils } = require('spartan-gold');
 
 const TX_TYPE_NFT_CREATE = "NFT_CREATE";
 const TX_TYPE_NFT_TRANSFER = "NFT_TRANSFER";
@@ -42,19 +42,12 @@ module.exports = class NftBlock extends Block {
 
     switch (tx.data.type) {
 
-      case TX_TYPE_NFT_CREATE:
-        console.log(`Creating NFT for ${tx.from}`);
+      case TX_TYPE_NFT_CREATE: 
         this.createNft(tx.from, tx.id, tx.data.nft);
         break;
 
       case TX_TYPE_NFT_TRANSFER:
-        console.log(`Transferring NFT for ${tx.from}`);
-        this.transferNft(tx.from, tx.receiver, tx.data.title, tx.data.artName);
-        break;
-
-      case TX_TYPE_NFT_TRANSFER:
-        console.log(`Getting NFT for ${this.from}`);
-        this.getNft(title);
+        this.transferNft(tx.from, tx.data.r, tx.data.t, tx.data.a);
         break;
 
       default:
@@ -88,10 +81,46 @@ module.exports = class NftBlock extends Block {
     
     // Adding NFT to artists list.
     let ownedNfts = this.nftOwnerMap.get(owner) || [];
-    ownedNfts.push(nftID);
-    this.nftOwnerMap.set(owner, ownedNfts);
+    if(ownedNfts.includes(nftID) === false)
+    {
+      ownedNfts.push(nftID);
+      this.nftOwnerMap.set(owner, ownedNfts);
+    }
   }
-///////////////////////////
+
+  transferNft(sender, receiver, title, artName) {
+    let nftList = this.getOwnersNftList(sender);
+    
+    // Getting nftID
+    let nftID = this.getNftId(title, artName, nftList);
+
+    // Adding NFT to artists list.  
+    let ownedNftsReceiver = this.nftOwnerMap.get(receiver) || [];
+    console.log(ownedNftsReceiver);
+    if(ownedNftsReceiver.includes(nftID) === false) {
+        ownedNftsReceiver.push(nftID);
+        this.nftOwnerMap.set(receiver, ownedNftsReceiver);
+        console.log(ownedNftsReceiver);
+    }
+
+    // Removing nft from sender
+    let ownedNftsSender = this.nftOwnerMap.get(sender) || [];
+    if(ownedNftsSender.includes(nftID) === true) {
+      let i = 0;
+      while (i < ownedNftsSender.length) {
+        if (ownedNftsSender[i] === nftID) {
+        ownedNftsSender.splice(i, 1);
+        } 
+        else {
+           ++i;
+        }
+      }
+      this.nftOwnerMap.set(sender, ownedNftsSender);
+      return;
+    }
+
+  }
+
   transferNft(owner, receiver, title, artName) {
     let sent = receiver;
     let nftList = this.getOwnersNftList(owner);
@@ -105,7 +134,7 @@ module.exports = class NftBlock extends Block {
     ownedNfts.pop(nftIdentifier);
 
   }
-//////////////////////////////////
+
   getNft(nftID) {
     return this.nfts.get(nftID);
   }
