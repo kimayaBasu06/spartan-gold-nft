@@ -118,10 +118,7 @@ module.exports = class NftBlock extends Block {
       this.nftOwnerMap.set(sender, ownedNftsSender);
       return;
     }
-
-  }
-
-  transferNft(owner, receiver, title, artName) {
+    
     let sent = receiver;
     let nftList = this.getOwnersNftList(owner);
 
