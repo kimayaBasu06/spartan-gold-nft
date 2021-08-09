@@ -120,14 +120,12 @@ module.exports = class NftBlock extends Block {
     }
     
     let sent = receiver;
-    let nftList = this.getOwnersNftList(owner);
-
     let nftIdentifier = this.getNftId(title, artName, nftList);
     // Adding NFT to artists list.
     let sentNfts = this.nftOwnerMap.get(sent) || [];
     sentNfts.push(nftIdentifier);
     this.nftOwnerMap.set(sent, sentNfts);
-    let ownedNfts = this.nftOwnerMap.get(owner) || [];
+    let ownedNfts = this.nftOwnerMap.get(sender) || [];
     ownedNfts.pop(nftIdentifier);
 
   }
