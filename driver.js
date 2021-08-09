@@ -85,23 +85,6 @@ setTimeout(() => {
   storni.transferNft(gracie.address, storni.name, "Hombre pequeñito");
 }, 4000);
 
-/////////////////////////////
-// setTimeout(() => {
-//   console.log();
-//   console.log("***Posting Transaction***");
-//   console.log();
-//   // sets the value of smartContract to equal the information
-//   // the artist passes in.
-//   let artID = storni.name;
-//   let proName = "Guster Muster";
-//   let proDes = "BLAH BLAH BLAH";
-//   let smartContract = storni.createContract(artID);
-//   // calls the postTransaction method in nft-client.js, passing in 
-//   // smartContract as a parameter.
-//   storni.postTransaction(smartContract);
-// }, 3000);
-/////////////////////////////
-
 // Print out the final balances after it has been running for some time.
 setTimeout(() => {
   console.log();
