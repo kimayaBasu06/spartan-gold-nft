@@ -89,9 +89,4 @@ module.exports = class NftClient extends Miner {
       console.log();
     });
   }
-
-  createContract(artistID) {
-    let fruits = ['Apple', 'Banana', artistID];
-    return fruits;
-  }
 }
