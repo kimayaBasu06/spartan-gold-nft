@@ -97,7 +97,7 @@ module.exports = class NftBlock extends Block {
     // Adding NFT to artists list.  
     let ownedNftsReceiver = this.nftOwnerMap.get(receiver) || [];
     console.log(ownedNftsReceiver);
-    if(ownedNftsReceiver.includes(nftID) === false) {
+    if(!ownedNftsReceiver.includes(nftID)) {
         ownedNftsReceiver.push(nftID);
         this.nftOwnerMap.set(receiver, ownedNftsReceiver);
         console.log(ownedNftsReceiver);
