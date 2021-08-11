@@ -77,14 +77,13 @@ déjame saltar.`,
   });
 }, 2000);
 
-
+// Transfers the nft 'Hombre pequeñito' from storni to gracie.
 setTimeout(() => {
   console.log();
   console.log("***Transferring NFT***");
   console.log();
-  storni.transferNft(gracie.address, storni.name, "Hombre pequeñito")
+  storni.transferNft(gracie.address, storni.name, "Hombre pequeñito");
 }, 4000);
-
 
 // Print out the final balances after it has been running for some time.
 setTimeout(() => {

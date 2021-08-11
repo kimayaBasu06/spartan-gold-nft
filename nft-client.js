@@ -65,6 +65,13 @@ module.exports = class NftClient extends Miner {
     this.net.broadcast(Blockchain.POST_TRANSACTION, tx);
   }
 
+
+  postTransaction(TsmartContract) {
+    //this.log("   Not yet implemented...");
+    console.log("THIS IS THE SMART CONTRACT???");
+    console.log(TsmartContract)
+  }
+
   /**
    * Post a transaction transferring an NFT to a new owner.
    */
