@@ -13,14 +13,11 @@ module.exports = class NftClient extends Miner {
    */
   createNft(nft) {
     this.postGenericTransaction({
-      //from: this.address,
-      //nonce: this.nonce,
-      //pubKey: this.keyPair.public,
+      fee: 0,
       data: {
         type: NftBlock.TX_TYPE_NFT_CREATE,
         nft: nft,
       },
-      fee: 0,
     });
   }
 
@@ -33,9 +30,6 @@ module.exports = class NftClient extends Miner {
       artistShare
   }) {
     this.postGenericTransaction({
-      from: this.address,
-      nonce: this.nonce,
-      pubKey: this.keyPair.public,
       fee: 0,
       data: {
         type: NftBlock.TX_TYPE_NFT_FUNDRAISER_INIT,
@@ -51,9 +45,6 @@ module.exports = class NftClient extends Miner {
 
   contributeFunds({ artistID, projectID, amount }) {
     this.postGenericTransaction({
-      from: this.address,
-      nonce: this.nonce,
-      pubKey: this.keyPair.public,
       fee: 0,
       data: {
         type: NftBlock.TX_TYPE_NFT_FUNDRAISER_CONTRIB,
@@ -71,16 +62,13 @@ module.exports = class NftClient extends Miner {
   transferNft(receiver, artName, title) {
     // Posting a transaction to transfer the NFT.
     this.postGenericTransaction({
-      from: this.address,
-      nonce: this.nonce,
-      pubKey: this.keyPair.public,
+      fee: 0,
       data: {
         type: NftBlock.TX_TYPE_NFT_TRANSFER,
         t: title,
         a: artName,
         r: receiver,
       },
-      fee: 0,
     });
   }
 

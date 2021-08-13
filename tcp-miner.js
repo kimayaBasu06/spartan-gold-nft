@@ -194,11 +194,10 @@ function readUserInput() {
           }
         });
         break;
-        case 'i':
+      case 'i':
         minnie.showNfts();
-        readUserInput();
         break;
-        case 'a':
+      case 'a':
         rl.question(`  artist name: `, (artName) => {
           rl.question(`  title of nft: `, (title) => {
             rl.question(`  address: `, (addr) => {
@@ -206,14 +205,14 @@ function readUserInput() {
               console.log("  Transferring NFT");
               setTimeout(() => {
                 readUserInput();
-              }, 1500);
+              }, 0);
             });
           });
         });
         break;
-        case 'n':
+      case 'n':
         rl.question(`  nft name: `, (title) => {
-          rl.question(`  content of nft: `, (content) =>{
+          rl.question(`  content of nft: `, (content) => {
             minnie.createNft({
               artistName: minnie.name,
               title: title, 
@@ -221,7 +220,7 @@ function readUserInput() {
             console.log("  Creating NFT");
             setTimeout(() => {
               readUserInput();
-            }, 1600);
+            }, 0);
           });
         });
         break;
