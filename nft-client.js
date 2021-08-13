@@ -12,64 +12,76 @@ module.exports = class NftClient extends Miner {
    * Post a transaction creating a new NFT owned by the client.
    */
   createNft(nft) {
-    let data = {
-      nft: nft,
-      type: NftBlock.TX_TYPE_NFT_CREATE,
-    }
- 
-    // Posting a transaction to create the NFT.
-    let tx = Blockchain.makeTransaction({
+    this.postGenericTransaction({
+      //from: this.address,
+      //nonce: this.nonce,
+      //pubKey: this.keyPair.public,
+      data: {
+        type: NftBlock.TX_TYPE_NFT_CREATE,
+        nft: nft,
+      },
+      fee: 0,
+    });
+  }
+
+  createFundraiser({
+      projectName,
+      projectDescription,
+      projectID,
+      endDate,
+      maxFunding,
+      artistShare
+  }) {
+    this.postGenericTransaction({
       from: this.address,
       nonce: this.nonce,
       pubKey: this.keyPair.public,
-      data: data,
       fee: 0,
+      data: {
+        type: NftBlock.TX_TYPE_NFT_FUNDRAISER_INIT,
+        projectName,
+        projectDescription,
+        projectID,
+        endDate,
+        maxFunding,
+        artistShare,
+      }
     });
-  
-    tx.sign(this.keyPair.private);
-    
-    // Adding transaction to pending.
-    this.pendingOutgoingTransactions.set(tx.id, tx);
+  }
 
-    this.nonce++;
+  contributeFunds({ artistID, projectID, amount }) {
+    this.postGenericTransaction({
+      from: this.address,
+      nonce: this.nonce,
+      pubKey: this.keyPair.public,
+      fee: 0,
+      data: {
+        type: NftBlock.TX_TYPE_NFT_FUNDRAISER_CONTRIB,
+        artistID,
+        projectID,
+        amount,
+      }
+    });
+  }
 
-    this.net.broadcast(Blockchain.POST_TRANSACTION, tx);
+  sellNft() {
+    this.log("Not implemented: sellNft");
   }
 
   transferNft(receiver, artName, title) {
-    //this.log("   Not yet implemented...");
-
-    let data = {
-      type: NftBlock.TX_TYPE_NFT_TRANSFER,
-      t: title,
-      a: artName,
-      r: receiver,
-    }
-    
     // Posting a transaction to transfer the NFT.
-    let tx = Blockchain.makeTransaction({
+    this.postGenericTransaction({
       from: this.address,
       nonce: this.nonce,
       pubKey: this.keyPair.public,
-      data: data,
+      data: {
+        type: NftBlock.TX_TYPE_NFT_TRANSFER,
+        t: title,
+        a: artName,
+        r: receiver,
+      },
       fee: 0,
     });
-    console.log();
-    tx.sign(this.keyPair.private);
-    console.log();
-    // Adding transaction to pending.
-    this.pendingOutgoingTransactions.set(tx.id, tx);
-    console.log();
-    this.nonce++;
-
-    this.net.broadcast(Blockchain.POST_TRANSACTION, tx);
-  }
-
-
-  postTransaction(TsmartContract) {
-    //this.log("   Not yet implemented...");
-    console.log("THIS IS THE SMART CONTRACT???");
-    console.log(TsmartContract)
   }
 
   /**

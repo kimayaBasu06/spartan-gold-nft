@@ -5,15 +5,17 @@ const { Blockchain, Client, Miner, Transaction, FakeNet } = require('spartan-gol
 const NftClient = require('./nft-client.js');
 const NftBlock = require('./nft-block.js');
 
+const FUND_DURATION = 60000;
+
 console.log("Starting simulation.  This may take a moment...");
 
 
 let fakeNet = new FakeNet();
 
 // Clients
-let alice = new Client({name: "Alice", net: fakeNet});
-let bob = new Client({name: "Bob", net: fakeNet});
-let charlie = new Client({name: "Charlie", net: fakeNet});
+let alice = new NftClient({name: "Alice", net: fakeNet});
+let bob = new NftClient({name: "Bob", net: fakeNet});
+let charlie = new NftClient({name: "Charlie", net: fakeNet});
 
 // Miners
 let minnie = new Miner({name: "Minnie", net: fakeNet});
@@ -55,11 +57,53 @@ fakeNet.register(alice, bob, charlie, minnie, mickey, storni, gracie);
 
 // Miners start mining.
 minnie.initialize();
-mickey.initialize();
+//mickey.initialize();
 
 // Alice transfers some money to Bob.
 console.log(`Alice is transferring 40 gold to ${bob.address}`);
 alice.postTransaction([{ amount: 40, address: bob.address }]);
+
+// Artist begins a new fundraising campaign.
+setTimeout(() => {
+  console.log();
+  console.log("***STARTING NEW FUNDRAISER***");
+  console.log();
+  storni.createFundraiser({
+    projectName: "Un poema de amor",
+    projectDescription: "Probablemente pienses que este canción es sobre ti, ¿no es así?",
+    projectID: "1",
+    endDate: Date.now() + FUND_DURATION,
+    maxFunding: "25",
+    artistShare: "0.20",
+  });
+}, 2000);
+
+// Backers donate to fundraiser
+setTimeout(() => {
+  console.log();
+  console.log("***LIST FUNDRAISERS***");
+  minnie.currentBlock.listFundraisers();
+  console.log();
+  console.log("***CONTRIBUTING TO FUNDRAISER***");
+  console.log();
+  /*
+  alice.contributeFunds({
+    artistID: storni.address,
+    projectID: "1",
+    amount: 10,
+  });
+  bob.contributeFunds({
+    artistID: storni.address,
+    projectID: "1",
+    amount: 8,
+  });
+  */
+  charlie.contributeFunds({
+    artistID: storni.address,
+    projectID: "1",
+    amount: 12,
+  });
+}, 5000);
 
 // Artist creates her NFT.
 setTimeout(() => {
@@ -68,6 +112,7 @@ setTimeout(() => {
   console.log();
   storni.createNft({
     artistName: storni.name,
+    projectID: "1",
     title: "Hombre pequeñito",
     content: `
 Hombre pequeñito, hombre pequeñito,
@@ -75,23 +120,31 @@ Suelta a tu canario que quiere volar...
 Yo soy el canario, hombre pequeñito,
 déjame saltar.`,
   });
-}, 2000);
+}, 9000);
 
-// Transfers the nft 'Hombre pequeñito' from storni to gracie.
+//setTimeout(() => {
+//  console.log();
+//  console.log("***Transferring NFT***");
+//  console.log();
+//  storni.transferNft(gracie.address, storni.name, "Hombre pequeñito")
+//}, 14000);
+
 setTimeout(() => {
   console.log();
-  console.log("***Transferring NFT***");
+  console.log("***SELL NFT***");
   console.log();
-  storni.transferNft(gracie.address, storni.name, "Hombre pequeñito");
-}, 4000);
+  storni.sellNft({
+    buyerID: "FIXME",
+    nftID: "FIXME",
+    offerExpiration: Date.now + FUND_DURATION,
+    amount: 500,
+  });
+}, 14000);
 
 // Print out the final balances after it has been running for some time.
 setTimeout(() => {
   console.log();
   console.log(`Minnie has a chain of length ${minnie.currentBlock.chainLength}:`);
-
-  console.log();
-  console.log(`Mickey has a chain of length ${mickey.currentBlock.chainLength}:`);
 
   console.log();
   console.log("Final balances (Minnie's perspective):");
@@ -109,5 +162,7 @@ setTimeout(() => {
   console.log("Showing NFTs for Gracie:");
   gracie.showNfts(gracie.address);
 
+  minnie.currentBlock.listFundraisers();
+
   process.exit(0);
-}, 6000);
+}, 19000);

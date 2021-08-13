@@ -2,6 +2,8 @@
 
 const { Block, utils } = require('spartan-gold');
 
+const TX_TYPE_NFT_FUNDRAISER_INIT = "NFT_FUNDRAISER_INIT";
+const TX_TYPE_NFT_FUNDRAISER_CONTRIB = "NFT_FUNDRAISER_CONTRIB";
 const TX_TYPE_NFT_CREATE = "NFT_CREATE";
 const TX_TYPE_NFT_TRANSFER = "NFT_TRANSFER";
 
@@ -9,6 +11,8 @@ module.exports = class NftBlock extends Block {
 
   static get TX_TYPE_NFT_CREATE() { return TX_TYPE_NFT_CREATE; }
   static get TX_TYPE_NFT_TRANSFER() { return TX_TYPE_NFT_TRANSFER; }
+  static get TX_TYPE_NFT_FUNDRAISER_INIT() { return TX_TYPE_NFT_FUNDRAISER_INIT; }
+  static get TX_TYPE_NFT_FUNDRAISER_CONTRIB() { return TX_TYPE_NFT_FUNDRAISER_CONTRIB; }
 
   constructor(rewardAddr, prevBlock, target, coinbaseReward) {
     super(rewardAddr, prevBlock, target, coinbaseReward);
@@ -19,6 +23,8 @@ module.exports = class NftBlock extends Block {
     // Tracking ownership of NFTs
     this.nftOwnerMap = (prevBlock && prevBlock.nftOwnerMap) ? new Map(prevBlock.nftOwnerMap) : new Map();
 
+    // Tracking fundraisers
+    this.fundraisers = (prevBlock && prevBlock.fundraisers) ? new Map(prevBlock.fundraisers) : new Map();
   }
 
   /**
@@ -41,6 +47,15 @@ module.exports = class NftBlock extends Block {
     }
 
     switch (tx.data.type) {
+
+      case TX_TYPE_NFT_FUNDRAISER_INIT: 
+        this.initFundraiser(tx.from, tx.data.projectID, tx.data);
+        break;
+
+      case TX_TYPE_NFT_FUNDRAISER_CONTRIB: 
+        let fundraiserID = this.calcFundraiserID(tx.data.artistID, tx.data.projectID);
+        // Reject contributions from fundraisers that are not yet known.
+        return this.contribute(tx.from, fundraiserID, tx.data.amount);
 
       case TX_TYPE_NFT_CREATE: 
         this.createNft(tx.from, tx.id, tx.data.nft);
@@ -69,8 +84,57 @@ module.exports = class NftBlock extends Block {
   rerun(prevBlock) {
     this.nfts = new Map(prevBlock.nfts);
     this.nftOwnerMap = new Map(prevBlock.nftOwnerMap);
+    this.fundraisers = new Map(prevBlock.fundraisers);
 
     return super.rerun(prevBlock);
+  }
+
+  calcFundraiserID(artistID, projectID) {
+    return utils.hash(`${artistID}||${projectID}`);
+  }
+
+  initFundraiser(artistID, projectID, {
+    projectName, projectDescription, endDate, maxFunding, artistShare,
+  }) {
+    let fundraiserID = this.calcFundraiserID(artistID, projectID);
+    this.fundraisers.set(fundraiserID, {
+      donations: [],
+      artistID,
+      projectName,
+      projectDescription,
+      endDate,
+      maxFunding,
+      artistShare,
+    });
+  }
+  
+  listFundraisers() {
+    this.fundraisers.forEach((fr, frID) => {
+      let artistShare = parseFloat(fr.artistShare);
+      let currentFunding = fr.donations.reduce((acc, {amount}) => {
+        return acc + parseInt(amount);
+      }, 0);
+      console.log(`
+  Fundraiser ${frID}:
+  ===========================================================
+  "${fr.projectName}", by artist ${fr.artistID}.
+  Artist will keep ${artistShare * 100}% of the first sale price.
+  (${currentFunding}/${fr.maxFunding} funding received.)
+  Description: ${fr.projectDescription}
+  Donations: ${fr.donations.length}
+      `);
+    });
+  }
+
+  contribute(donorID, fundraiserID, amount) {
+    let fr = this.fundraisers.get(fundraiserID);
+    if (fr === undefined) {
+      console.log(`Unknown fundraiser ${fundraiserID}`)
+      return false;
+    }
+    fr.donations.push({ donorID, amount });
+    this.fundraisers.set(fundraiserID, fr);
+    return true;
   }
 
   createNft(owner, txID, nft) {
@@ -81,14 +145,13 @@ module.exports = class NftBlock extends Block {
     
     // Adding NFT to artists list.
     let ownedNfts = this.nftOwnerMap.get(owner) || [];
-    if(ownedNfts.includes(nftID) === false)
-    {
+    if (!ownedNfts.includes(nftID)) {
       ownedNfts.push(nftID);
       this.nftOwnerMap.set(owner, ownedNfts);
     }
   }
 
-  transferNft(sender, receiver, title, artName) {
+  /*transferNft(sender, receiver, title, artName) {
     let nftList = this.getOwnersNftList(sender);
     
     // Getting nftID
@@ -109,26 +172,31 @@ module.exports = class NftBlock extends Block {
       let i = 0;
       while (i < ownedNftsSender.length) {
         if (ownedNftsSender[i] === nftID) {
-        ownedNftsSender.splice(i, 1);
-        } 
-        else {
+          ownedNftsSender.splice(i, 1);
+        } else {
            ++i;
         }
       }
       this.nftOwnerMap.set(sender, ownedNftsSender);
       return;
     }
-    
+
+  }
+
+  transferNft(owner, receiver, title, artName) {
     let sent = receiver;
+    let nftList = this.getOwnersNftList(owner);
+
     let nftIdentifier = this.getNftId(title, artName, nftList);
     // Adding NFT to artists list.
     let sentNfts = this.nftOwnerMap.get(sent) || [];
     sentNfts.push(nftIdentifier);
     this.nftOwnerMap.set(sent, sentNfts);
-    let ownedNfts = this.nftOwnerMap.get(sender) || [];
+    let ownedNfts = this.nftOwnerMap.get(owner) || [];
     ownedNfts.pop(nftIdentifier);
 
   }
+  */
 
   getNft(nftID) {
     return this.nfts.get(nftID);
