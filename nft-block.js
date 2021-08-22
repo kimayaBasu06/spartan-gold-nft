@@ -89,10 +89,12 @@ module.exports = class NftBlock extends Block {
     return super.rerun(prevBlock);
   }
 
+  // creates the fundraiser ID using the artist ID and the project ID
   calcFundraiserID(artistID, projectID) {
     return utils.hash(`${artistID}||${projectID}`);
   }
 
+  // creates the fundraiser
   initFundraiser(artistID, projectID, {
     projectName, projectDescription, endDate, maxFunding, artistShare,
   }) {
@@ -126,10 +128,13 @@ module.exports = class NftBlock extends Block {
     });
   }
 
+  // pushes the amount of funds donated to fundrasier and sets it to that specific
+  // fundrasier.
   contribute(donorID, fundraiserID, amount) {
-    let fr = this.fundraisers.get(fundraiserID);
+    let fundID = fundraiserID;
+    let fr = this.fundraisers.get(fundID);
     if (fr === undefined) {
-      console.log(`Unknown fundraiser ${fundraiserID}`)
+      console.log(`Unknown fundraiser ${fundID}`)
       return false;
     }
     fr.donations.push({ donorID, amount });
