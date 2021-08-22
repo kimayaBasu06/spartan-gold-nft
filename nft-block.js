@@ -119,9 +119,9 @@ module.exports = class NftBlock extends Block {
   ===========================================================
   "${fr.projectName}", by artist ${fr.artistID}.
   Artist will keep ${artistShare * 100}% of the first sale price.
-  (${currentFunding}/${fr.maxFunding} funding received.)
+  (${currentFunding / 2}/${fr.maxFunding} funding received.)
   Description: ${fr.projectDescription}
-  Donations: ${fr.donations.length}
+  Donations: ${fr.donations.length / 2}
       `);
     });
   }
@@ -156,7 +156,6 @@ module.exports = class NftBlock extends Block {
     
     // Getting nftID
     let nftID = this.getNftId(title, artName, nftList);
-
     // Adding NFT to artists list.  
     let ownedNftsReceiver = this.nftOwnerMap.get(receiver) || [];
     console.log(ownedNftsReceiver);
@@ -165,7 +164,6 @@ module.exports = class NftBlock extends Block {
         this.nftOwnerMap.set(receiver, ownedNftsReceiver);
         console.log(ownedNftsReceiver);
     }
-
     // Removing nft from sender
     let ownedNftsSender = this.nftOwnerMap.get(sender) || [];
     if(ownedNftsSender.includes(nftID) === true) {
@@ -180,13 +178,10 @@ module.exports = class NftBlock extends Block {
       this.nftOwnerMap.set(sender, ownedNftsSender);
       return;
     }
-
   }
-
   transferNft(owner, receiver, title, artName) {
     let sent = receiver;
     let nftList = this.getOwnersNftList(owner);
-
     let nftIdentifier = this.getNftId(title, artName, nftList);
     // Adding NFT to artists list.
     let sentNfts = this.nftOwnerMap.get(sent) || [];
@@ -194,7 +189,6 @@ module.exports = class NftBlock extends Block {
     this.nftOwnerMap.set(sent, sentNfts);
     let ownedNfts = this.nftOwnerMap.get(owner) || [];
     ownedNfts.pop(nftIdentifier);
-
   }
   */
 

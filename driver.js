@@ -1,3 +1,4 @@
+
 "use strict";
 
 const { Blockchain, Client, Miner, Transaction, FakeNet } = require('spartan-gold');
@@ -16,6 +17,7 @@ let fakeNet = new FakeNet();
 let alice = new NftClient({name: "Alice", net: fakeNet});
 let bob = new NftClient({name: "Bob", net: fakeNet});
 let charlie = new NftClient({name: "Charlie", net: fakeNet});
+let escrow = new NftClient({name: "Escrow", net: fakeNet});
 
 // Miners
 let minnie = new Miner({name: "Minnie", net: fakeNet});
@@ -34,6 +36,7 @@ let genesis = Blockchain.makeGenesis({
     [alice, 233],
     [bob, 99],
     [charlie, 67],
+    [escrow, 1],
     [storni, 500],
     [gracie, 300],
     [minnie, 500],
@@ -53,7 +56,7 @@ function showBalances(client) {
 console.log("Initial balances:");
 showBalances(alice);
 
-fakeNet.register(alice, bob, charlie, minnie, mickey, storni, gracie);
+fakeNet.register(alice, bob, charlie, escrow, minnie, mickey, storni, gracie);
 
 // Miners start mining.
 minnie.initialize();
@@ -101,9 +104,11 @@ setTimeout(() => {
   charlie.contributeFunds({
     artistID: storni.address,
     projectID: "1",
-    amount: 12,
+    amount: 25,
   });
+  charlie.postTransaction([{ amount: 25, address: escrow.address }]);
 }, 5000);
+
 
 // Artist creates her NFT.
 setTimeout(() => {
@@ -163,6 +168,17 @@ setTimeout(() => {
   gracie.showNfts(gracie.address);
 
   minnie.currentBlock.listFundraisers();
+  
+  if(25 <= escrow.lastBlock.balanceOf(escrow.address) - 1) {
+    escrow.postTransaction([{ amount: 25, address: storni.address }]);
+    console.log("FUNDRAISER HAS BEEN COMPLETED");
+  }
+  else {
+    escrow.postTransaction([{ amount: escrow.lastBlock.balanceOf(escrow.address) - 1, address: charlie.address }]);
+    console.log("FUNDRAISER HAS FAILED");
+  }
 
+setTimeout(() => {
   process.exit(0);
+}, 250);
 }, 19000);
