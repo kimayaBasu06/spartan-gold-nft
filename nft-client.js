@@ -29,6 +29,7 @@ module.exports = class NftClient extends Miner {
       maxFunding,
       artistShare
   }) {
+    // Post a transaction creating a frundrasier.
     this.postGenericTransaction({
       fee: 0,
       data: {
@@ -44,6 +45,7 @@ module.exports = class NftClient extends Miner {
   }
 
   contributeFunds({ artistID, projectID, amount }) {
+    // posts a trasaction to contribute funds
     this.postGenericTransaction({
       fee: 0,
       data: {
