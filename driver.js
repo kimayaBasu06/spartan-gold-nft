@@ -167,15 +167,19 @@ setTimeout(() => {
   console.log("Showing NFTs for Gracie:");
   gracie.showNfts(gracie.address);
 
+  console.log();
+  console.log("Showing Fundraisers:");
   minnie.currentBlock.listFundraisers();
   
   if(25 <= escrow.lastBlock.balanceOf(escrow.address) - 1) {
     escrow.postTransaction([{ amount: 25, address: storni.address }]);
     console.log("FUNDRAISER HAS BEEN COMPLETED");
+    console.log();
   }
   else {
     escrow.postTransaction([{ amount: escrow.lastBlock.balanceOf(escrow.address) - 1, address: charlie.address }]);
     console.log("FUNDRAISER HAS FAILED");
+    console.log();
   }
 
 setTimeout(() => {
