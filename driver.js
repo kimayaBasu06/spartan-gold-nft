@@ -78,6 +78,20 @@ setTimeout(() => {
   });
 }, 2000);
 
+// setTimeout(() => {
+//   console.log();
+//   console.log("***STARTING NEW FUNDRAISER***");
+//   console.log();
+//   storni.createFundraiser({
+//     projectName: "Guster Muster",
+//     projectDescription: "An old man with a dog. Morning comes the man has gone, the dog forever alone.",
+//     projectID: "2",
+//     endDate: Date.now() + FUND_DURATION,
+//     maxFunding: "0",
+//     artistShare: "0.20",
+//   });
+// }, 3000);
+
 // Backers donate to fundraiser
 setTimeout(() => {
   console.log();
@@ -86,18 +100,6 @@ setTimeout(() => {
   console.log();
   console.log("***CONTRIBUTING TO FUNDRAISER***");
   console.log();
-  /*
-  alice.contributeFunds({
-    artistID: storni.address,
-    projectID: "1",
-    amount: 10,
-  });
-  bob.contributeFunds({
-    artistID: storni.address,
-    projectID: "1",
-    amount: 8,
-  });
-  */
   charlie.contributeFunds({
     artistID: storni.address,
     projectID: "1",
