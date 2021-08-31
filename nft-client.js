@@ -61,17 +61,20 @@ module.exports = class NftClient extends Miner {
     this.log("Not implemented: sellNft");
   }
 
-  transferNft(receiver, artName, title) {
+  transferNft(receiver, nftID) {
     // Posting a transaction to transfer the NFT.
     this.postGenericTransaction({
       fee: 0,
       data: {
         type: NftBlock.TX_TYPE_NFT_TRANSFER,
-        t: title,
-        a: artName,
-        r: receiver,
+        receiver: receiver,
+        nftID: nftID
       },
     });
+  }
+
+  getNftIds() {
+    return this.lastBlock.nftOwnerMap.get(this.address);
   }
 
   /**

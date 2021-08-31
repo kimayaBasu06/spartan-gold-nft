@@ -36,7 +36,6 @@ module.exports = class NftBlock extends Block {
    * @returns Success of adding transaction to the block.
    */
   addTransaction(tx, client) {
-    console.log();
     if (!super.addTransaction(tx, client)) {
       return false;
     } 
@@ -62,7 +61,7 @@ module.exports = class NftBlock extends Block {
         break;
 
       case TX_TYPE_NFT_TRANSFER:
-        this.transferNft(tx.from, tx.data.r, tx.data.t, tx.data.a);
+        this.transferNft(tx.from, tx.data.receiver, tx.data.nftID);
         break;
 
       default:
@@ -116,7 +115,7 @@ module.exports = class NftBlock extends Block {
       let currentFunding = fr.donations.reduce((acc, {amount}) => {
         return acc + parseInt(amount);
       }, 0);
-      console.log(`
+      /*console.log(`
   Fundraiser ${frID}:
   ===========================================================
   "${fr.projectName}", by artist ${fr.artistID}.
@@ -124,7 +123,7 @@ module.exports = class NftBlock extends Block {
   (${currentFunding}/${fr.maxFunding} funding received.)
   Description: ${fr.projectDescription}
   Donations: ${fr.donations.length}
-      `);
+      `);*/
     });
   }
 
@@ -156,19 +155,12 @@ module.exports = class NftBlock extends Block {
     }
   }
 
-  /*transferNft(sender, receiver, title, artName) {
-    let nftList = this.getOwnersNftList(sender);
-    
-    // Getting nftID
-    let nftID = this.getNftId(title, artName, nftList);
-
-    // Adding NFT to artists list.  
+  transferNft(sender, receiver, nftID) {
+    // Adding NFT to receiver's list.  
     let ownedNftsReceiver = this.nftOwnerMap.get(receiver) || [];
-    console.log(ownedNftsReceiver);
     if(!ownedNftsReceiver.includes(nftID)) {
         ownedNftsReceiver.push(nftID);
         this.nftOwnerMap.set(receiver, ownedNftsReceiver);
-        console.log(ownedNftsReceiver);
     }
 
     // Removing nft from sender
@@ -185,23 +177,7 @@ module.exports = class NftBlock extends Block {
       this.nftOwnerMap.set(sender, ownedNftsSender);
       return;
     }
-
   }
-
-  transferNft(owner, receiver, title, artName) {
-    let sent = receiver;
-    let nftList = this.getOwnersNftList(owner);
-
-    let nftIdentifier = this.getNftId(title, artName, nftList);
-    // Adding NFT to artists list.
-    let sentNfts = this.nftOwnerMap.get(sent) || [];
-    sentNfts.push(nftIdentifier);
-    this.nftOwnerMap.set(sent, sentNfts);
-    let ownedNfts = this.nftOwnerMap.get(owner) || [];
-    ownedNfts.pop(nftIdentifier);
-
-  }
-  */
 
   getNft(nftID) {
     return this.nfts.get(nftID);
