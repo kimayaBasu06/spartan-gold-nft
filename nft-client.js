@@ -1,6 +1,6 @@
 "use strict";
 
-const { Blockchain, Miner } = require('spartan-gold');
+const { Miner } = require('spartan-gold');
 
 const NftBlock = require('./nft-block');
 
@@ -81,8 +81,6 @@ module.exports = class NftClient extends Miner {
    * Post a transaction transferring an NFT to a new owner.
    */
   showNfts() {
-    console.log("Showing NFTs: ");
-    console.log();
     let nftList = this.lastBlock.getOwnersNftList(this.address);
     nftList.forEach(nftID => {
       let nft = this.lastBlock.getNft(nftID);
