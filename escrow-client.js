@@ -2,7 +2,6 @@
 
 const { Blockchain } = require('spartan-gold');
 
-const NftBlock = require('./nft-block');
 const NftClient = require('./nft-client');
 
 // A client that serves the role of a smart contract.
