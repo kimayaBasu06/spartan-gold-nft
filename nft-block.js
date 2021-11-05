@@ -36,7 +36,6 @@ module.exports = class NftBlock extends Block {
    * @returns Success of adding transaction to the block.
    */
   addTransaction(tx, client) {
-    console.log();
     if (!super.addTransaction(tx, client)) {
       return false;
     } 
@@ -62,7 +61,7 @@ module.exports = class NftBlock extends Block {
         break;
 
       case TX_TYPE_NFT_TRANSFER:
-        this.transferNft(tx.from, tx.data.r, tx.data.t, tx.data.a);
+        this.transferNft(tx.from, tx.data.receiver, tx.data.nftID);
         break;
 
       default:
@@ -89,10 +88,12 @@ module.exports = class NftBlock extends Block {
     return super.rerun(prevBlock);
   }
 
+  // creates the fundraiser ID using the artist ID and the project ID
   calcFundraiserID(artistID, projectID) {
     return utils.hash(`${artistID}||${projectID}`);
   }
 
+  // creates the fundraiser
   initFundraiser(artistID, projectID, {
     projectName, projectDescription, endDate, maxFunding, artistShare,
   }) {
@@ -114,22 +115,25 @@ module.exports = class NftBlock extends Block {
       let currentFunding = fr.donations.reduce((acc, {amount}) => {
         return acc + parseInt(amount);
       }, 0);
-      console.log(`
+      /*console.log(`
   Fundraiser ${frID}:
   ===========================================================
   "${fr.projectName}", by artist ${fr.artistID}.
   Artist will keep ${artistShare * 100}% of the first sale price.
-  (${currentFunding / 2}/${fr.maxFunding} funding received.)
+  (${currentFunding}/${fr.maxFunding} funding received.)
   Description: ${fr.projectDescription}
-  Donations: ${fr.donations.length / 2}
-      `);
+  Donations: ${fr.donations.length}
+      `);*/
     });
   }
 
+  // pushes the amount of funds donated to fundrasier and sets it to that specific
+  // fundrasier.
   contribute(donorID, fundraiserID, amount) {
-    let fr = this.fundraisers.get(fundraiserID);
+    let fundID = fundraiserID;
+    let fr = this.fundraisers.get(fundID);
     if (fr === undefined) {
-      console.log(`Unknown fundraiser ${fundraiserID}`)
+      console.log(`Unknown fundraiser ${fundID}`)
       return false;
     }
     fr.donations.push({ donorID, amount });
@@ -151,19 +155,14 @@ module.exports = class NftBlock extends Block {
     }
   }
 
-  /*transferNft(sender, receiver, title, artName) {
-    let nftList = this.getOwnersNftList(sender);
-    
-    // Getting nftID
-    let nftID = this.getNftId(title, artName, nftList);
-    // Adding NFT to artists list.  
+  transferNft(sender, receiver, nftID) {
+    // Adding NFT to receiver's list.  
     let ownedNftsReceiver = this.nftOwnerMap.get(receiver) || [];
-    console.log(ownedNftsReceiver);
     if(!ownedNftsReceiver.includes(nftID)) {
         ownedNftsReceiver.push(nftID);
         this.nftOwnerMap.set(receiver, ownedNftsReceiver);
-        console.log(ownedNftsReceiver);
     }
+
     // Removing nft from sender
     let ownedNftsSender = this.nftOwnerMap.get(sender) || [];
     if(ownedNftsSender.includes(nftID) === true) {
@@ -179,18 +178,6 @@ module.exports = class NftBlock extends Block {
       return;
     }
   }
-  transferNft(owner, receiver, title, artName) {
-    let sent = receiver;
-    let nftList = this.getOwnersNftList(owner);
-    let nftIdentifier = this.getNftId(title, artName, nftList);
-    // Adding NFT to artists list.
-    let sentNfts = this.nftOwnerMap.get(sent) || [];
-    sentNfts.push(nftIdentifier);
-    this.nftOwnerMap.set(sent, sentNfts);
-    let ownedNfts = this.nftOwnerMap.get(owner) || [];
-    ownedNfts.pop(nftIdentifier);
-  }
-  */
 
   getNft(nftID) {
     return this.nfts.get(nftID);

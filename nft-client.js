@@ -1,6 +1,6 @@
 "use strict";
 
-const { Blockchain, Miner } = require('spartan-gold');
+const { Miner } = require('spartan-gold');
 
 const NftBlock = require('./nft-block');
 
@@ -29,6 +29,7 @@ module.exports = class NftClient extends Miner {
       maxFunding,
       artistShare
   }) {
+    // Post a transaction creating a frundrasier.
     this.postGenericTransaction({
       fee: 0,
       data: {
@@ -44,6 +45,7 @@ module.exports = class NftClient extends Miner {
   }
 
   contributeFunds({ artistID, projectID, amount }) {
+    // posts a trasaction to contribute funds
     this.postGenericTransaction({
       fee: 0,
       data: {
@@ -59,25 +61,26 @@ module.exports = class NftClient extends Miner {
     this.log("Not implemented: sellNft");
   }
 
-  transferNft(receiver, artName, title) {
+  transferNft(receiver, nftID) {
     // Posting a transaction to transfer the NFT.
     this.postGenericTransaction({
       fee: 0,
       data: {
         type: NftBlock.TX_TYPE_NFT_TRANSFER,
-        t: title,
-        a: artName,
-        r: receiver,
+        receiver: receiver,
+        nftID: nftID
       },
     });
+  }
+
+  getNftIds() {
+    return this.lastBlock.nftOwnerMap.get(this.address);
   }
 
   /**
    * Post a transaction transferring an NFT to a new owner.
    */
   showNfts() {
-    console.log("Showing NFTs: ");
-    console.log();
     let nftList = this.lastBlock.getOwnersNftList(this.address);
     nftList.forEach(nftID => {
       let nft = this.lastBlock.getNft(nftID);

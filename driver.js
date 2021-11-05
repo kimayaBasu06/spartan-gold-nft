@@ -1,4 +1,3 @@
-
 "use strict";
 
 const { Blockchain, Client, Miner, Transaction, FakeNet } = require('spartan-gold');
@@ -17,7 +16,6 @@ let fakeNet = new FakeNet();
 let alice = new NftClient({name: "Alice", net: fakeNet});
 let bob = new NftClient({name: "Bob", net: fakeNet});
 let charlie = new NftClient({name: "Charlie", net: fakeNet});
-let escrow = new NftClient({name: "Escrow", net: fakeNet});
 
 // Miners
 let minnie = new Miner({name: "Minnie", net: fakeNet});
@@ -36,7 +34,6 @@ let genesis = Blockchain.makeGenesis({
     [alice, 233],
     [bob, 99],
     [charlie, 67],
-    [escrow, 1],
     [storni, 500],
     [gracie, 300],
     [minnie, 500],
@@ -56,7 +53,7 @@ function showBalances(client) {
 console.log("Initial balances:");
 showBalances(alice);
 
-fakeNet.register(alice, bob, charlie, escrow, minnie, mickey, storni, gracie);
+fakeNet.register(alice, bob, charlie, minnie, mickey, storni, gracie);
 
 // Miners start mining.
 minnie.initialize();
@@ -81,6 +78,20 @@ setTimeout(() => {
   });
 }, 2000);
 
+// setTimeout(() => {
+//   console.log();
+//   console.log("***STARTING NEW FUNDRAISER***");
+//   console.log();
+//   storni.createFundraiser({
+//     projectName: "Guster Muster",
+//     projectDescription: "An old man with a dog. Morning comes the man has gone, the dog forever alone.",
+//     projectID: "2",
+//     endDate: Date.now() + FUND_DURATION,
+//     maxFunding: "0",
+//     artistShare: "0.20",
+//   });
+// }, 3000);
+
 // Backers donate to fundraiser
 setTimeout(() => {
   console.log();
@@ -89,26 +100,12 @@ setTimeout(() => {
   console.log();
   console.log("***CONTRIBUTING TO FUNDRAISER***");
   console.log();
-  /*
-  alice.contributeFunds({
-    artistID: storni.address,
-    projectID: "1",
-    amount: 10,
-  });
-  bob.contributeFunds({
-    artistID: storni.address,
-    projectID: "1",
-    amount: 8,
-  });
-  */
   charlie.contributeFunds({
     artistID: storni.address,
     projectID: "1",
-    amount: 25,
+    amount: 12,
   });
-  charlie.postTransaction([{ amount: 25, address: escrow.address }]);
 }, 5000);
-
 
 // Artist creates her NFT.
 setTimeout(() => {
@@ -167,22 +164,7 @@ setTimeout(() => {
   console.log("Showing NFTs for Gracie:");
   gracie.showNfts(gracie.address);
 
-  console.log();
-  console.log("Showing Fundraisers:");
   minnie.currentBlock.listFundraisers();
-  
-  if(25 <= escrow.lastBlock.balanceOf(escrow.address) - 1) {
-    escrow.postTransaction([{ amount: 25, address: storni.address }]);
-    console.log("FUNDRAISER HAS BEEN COMPLETED");
-    console.log();
-  }
-  else {
-    escrow.postTransaction([{ amount: escrow.lastBlock.balanceOf(escrow.address) - 1, address: charlie.address }]);
-    console.log("FUNDRAISER HAS FAILED");
-    console.log();
-  }
 
-setTimeout(() => {
   process.exit(0);
-}, 250);
 }, 19000);
